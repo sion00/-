@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="top">
+
+    <Button
+        android:id="@+id/Main_SCtrlButton"
+        android:layout_width="match_parent"
+        android:layout_height="97dp"
+        android:layout_weight="1"
+        android:text="스위치 제어"
+        android:textSize="36sp" />
+
+    <Button
+        android:id="@+id/Main_SleepManageButton"
+        android:layout_width="match_parent"
+        android:layout_height="97dp"
+        android:layout_weight="1"
+        android:text="수면 관리"
+        android:textSize="36sp" />
+
+    <Button
+        android:id="@+id/Main_SettingsButton"
+        android:layout_width="match_parent"
+        android:layout_height="97dp"
+        android:layout_weight="1"
+        android:text="설정"
+        android:textSize="36sp" />
+
+    <Button
+        android:id="@+id/Main_HelpButton"
+        android:layout_width="match_parent"
+        android:layout_height="97dp"
+        android:layout_weight="1"
+        android:text="도움말"
+        android:textSize="36sp" />
+
+    <Button
+        android:id="@+id/Main_ExitButton"
+        android:layout_width="match_parent"
+        android:layout_height="97dp"
+        android:layout_weight="1"
+        android:text="종료"
+        android:textSize="36sp" />
+</LinearLayout>

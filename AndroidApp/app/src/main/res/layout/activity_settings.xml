@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="top">
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_weight="6"
+        android:text="Wi-Fi 목록"
+        android:textSize="36sp" />
+
+    <Button
+        android:id="@+id/Settings_SetButton"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_weight="1"
+        android:text="설정"
+        android:textSize="36sp" />
+
+    <Button
+        android:id="@+id/Settings_BackButton"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_weight="1"
+        android:text="홈으로"
+        android:textSize="36sp" />
+
+</LinearLayout>
