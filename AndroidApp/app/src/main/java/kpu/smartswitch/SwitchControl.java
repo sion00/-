@@ -2,6 +2,7 @@ package kpu.smartswitch;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -42,21 +43,31 @@ public class SwitchControl extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_switch_control);
 
+        appData = getSharedPreferences("appData",MODE_PRIVATE);
+        loadStatus();
+
         light = (Switch)findViewById(R.id.lightSwitch);
         sensor = (Switch)findViewById(R.id.sensorSwitch);
         security = (Switch)findViewById(R.id.securitySwitch);
+
+        if(saveLightStatusData || saveSensorStatusData || saveSecurityStatusData){
+            light.setChecked(saveLightStatusData);
+            sensor.setChecked(saveSensorStatusData);
+            security.setChecked(saveSecurityStatusData);
+        }
 
         light.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 String lightStatus;
-                if(isChecked == true) {
-                    lightStatus = "control?LightStatus=1";
+                if(light.isChecked()) {
+                    lightStatus = "control.cgi?LightStatus=1";
                     Toast.makeText(SwitchControl.this, "전등 스위치 ON", Toast.LENGTH_SHORT).show();
-
+                    saveStatus();
                 }else {
-                    lightStatus = "control?LightStatus=0";
+                    lightStatus = "control.cgi?LightStatus=0";
                     Toast.makeText(SwitchControl.this, "전등 스위치 OFF", Toast.LENGTH_SHORT).show();
+                    saveStatus();
                 }
 
                 String serverAddress = "NodeMCU_IP:80";
@@ -69,12 +80,14 @@ public class SwitchControl extends AppCompatActivity {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 String sensorStatus;
-                if(isChecked == true) {
-                    sensorStatus = "control?SensorStatus=1";
+                if(sensor.isChecked()) {
+                    sensorStatus = "control.cgi?SensorStatus=1";
                     Toast.makeText(SwitchControl.this, "센서 스위치 ON", Toast.LENGTH_SHORT).show();
+                    saveStatus();
                 }else {
-                    sensorStatus = "control?SensorStatus=0";
+                    sensorStatus = "control.cgi?SensorStatus=0";
                     Toast.makeText(SwitchControl.this, "센서 스위치 OFF", Toast.LENGTH_SHORT).show();
+                    saveStatus();
                 }
 
                 String serverAddress = "NodeMCU_IP:80";
@@ -87,12 +100,14 @@ public class SwitchControl extends AppCompatActivity {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 String securityStatus;
-                if(isChecked == true) {
-                    securityStatus = "control?SecurityStatus=1";
+                if(security.isChecked()) {
+                    securityStatus = "control.cgi?SecurityStatus=1";
                     Toast.makeText(SwitchControl.this, "방범 기능 ON", Toast.LENGTH_SHORT).show();
+                    saveStatus();
                 }else {
-                    securityStatus = "control?SecurityStatus=0";
+                    securityStatus = "control.cgi?SecurityStatus=0";
                     Toast.makeText(SwitchControl.this, "방범 기능 OFF", Toast.LENGTH_SHORT).show();
+                    saveStatus();
                 }
 
                 String serverAddress = "NodeMCU_IP:80";
@@ -115,6 +130,23 @@ public class SwitchControl extends AppCompatActivity {
                 finish();
             }
         });
+    }
+
+    public void saveStatus(){
+        SharedPreferences.Editor editor = appData.edit();
+
+        editor.putBoolean("lightStatus",light.isChecked());
+        editor.putBoolean("sensorStatus",sensor.isChecked());
+        editor.putBoolean("securityStatus",security.isChecked());
+
+        editor.apply();
+    }
+
+    public void loadStatus(){
+        //저장 이력 없을 시 기본값
+        saveLightStatusData = appData.getBoolean("lightStatus",false);
+        saveSensorStatusData = appData.getBoolean("sensorStatus",false);
+        saveSecurityStatusData = appData.getBoolean("securityStatus",false);
     }
 
     public class HttpRequestTask extends AsyncTask<String, Void, String> {
@@ -153,6 +185,5 @@ public class SwitchControl extends AppCompatActivity {
         protected void onCancelled() {
             super.onCancelled();
         }
-
     }
 }
