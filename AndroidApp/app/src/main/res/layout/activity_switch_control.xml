@@ -9,7 +9,7 @@
     <Switch
         android:id="@+id/lightSwitch"
         android:layout_width="match_parent"
-        android:layout_height="70dp"
+        android:layout_height="80dp"
         android:layout_weight="1"
         android:scrollbarSize="36dp"
         android:showText="true"
@@ -17,9 +17,19 @@
         android:textSize="36sp" />
 
     <Switch
+        android:id="@+id/timerSwitch"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:layout_weight="1"
+        android:showText="true"
+        android:text="타이머  "
+        android:textAlignment="viewEnd"
+        android:textSize="24sp" />
+
+    <Switch
         android:id="@+id/sensorSwitch"
         android:layout_width="match_parent"
-        android:layout_height="70dp"
+        android:layout_height="80dp"
         android:layout_weight="1"
         android:scrollbarSize="36dp"
         android:showText="true"
@@ -29,28 +39,35 @@
     <Switch
         android:id="@+id/securitySwitch"
         android:layout_width="match_parent"
-        android:layout_height="70dp"
+        android:layout_height="80dp"
         android:layout_weight="1"
         android:scrollbarSize="36dp"
         android:showText="true"
         android:text="방범"
         android:textSize="36sp" />
 
+    <TextView
+        android:id="@+id/textView5"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:layout_weight="1"
+        android:text=" " />
+
     <Button
         android:id="@+id/SCtrl_SetTimerButton"
         android:layout_width="match_parent"
-        android:layout_height="100dp"
+        android:layout_height="80dp"
         android:layout_gravity="bottom"
         android:layout_weight="1"
-        android:text="타이머 설정"
+        android:text="설정"
         android:textSize="36sp" />
 
     <Button
         android:id="@+id/SCtrl_BackButton"
         android:layout_width="match_parent"
-        android:layout_height="100dp"
-        android:layout_weight="1"
+        android:layout_height="80dp"
         android:layout_gravity="bottom"
+        android:layout_weight="1"
         android:text="종료"
         android:textSize="36sp" />
 
