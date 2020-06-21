@@ -2,6 +2,8 @@
 #include <ESP8266WiFi.h>
 #include <WiFiClient.h>
 #include <ESP8266WebServer.h>
+#include "FS.h"
+#include <TimeLib.h>
 
 #ifndef APSSID
 #define APSSID "KPUS/W"
@@ -14,19 +16,48 @@ const char *password = APPSK;
 unsigned long Current_time, Off_time, Timer_time = 0;
 int Light_state, Sensor_state, Security_state = 0;
 int Timer = 0;
+int Timer_t = 5000;
 int Light = D5;
 int Sensor = D6;
-int val = 0;
+int Security = D1;
+
+int val1, val2 = 0;
 
 ESP8266WebServer server(80);
 
-void mainpage(){
-  String message = "";
-  message += "<html>";
-  message += "<body>";
+void mainpage(){ /*status showing*/
 
-  message += "Server IP : ";
-  message += "192.168.4.1";
+  int y=year();
+  int m=month();
+  int d=day();
+  int h=hour();
+  int mi=minute();
+  int s=second();
+  
+  String message = "";
+  
+  message += "<html>";  
+  
+  message += "<body>";
+  message += "Server IP : 192.168.4.1";
+  message += "<br /><br />";  
+  message += "Time : ";
+  message += y;
+  message += ".";
+  if(m < 10){message += "0";}
+  message += m;
+  message += ".";
+  if(d < 10){message += "0";}
+  message += d;
+  message += " ";
+  if(h < 10){message += "0";}
+  message += h;
+  message += ":";
+  if(mi < 10){message += "0";}
+  message += mi;
+  message += ":";
+  if(s < 10){message += "0";}
+  message += s;
   message += "<br /><br />";
   message += "Currently Light is ";
   message += (Light_state ? "1" : "0");
@@ -39,7 +70,6 @@ void mainpage(){
   message += "<br /><br />";
   message += "Currently Security is ";
   message += (Security_state ? "1" : "0");
-
   message += "</body>";
   message += "</html>";
 
@@ -62,23 +92,6 @@ void controlpage(){
   
   message += "<P><INPUT type=\"radio\" name=\"SecurityStatus\" value=\"1\">Security ON";
   message += "<P><INPUT type=\"radio\" name=\"SecurityStatus\" value=\"0\">Security OFF";
-  message += "<P><INPUT type=\"submit\" value=\"Submit\"> </FORM>";
-
-  message += "</body>";
-  message += "</html>";
-
-  server.send(200, "text/html", message);
-}
-
-void timerpage(){
-  
-  String message = "";
-  message += "<html>";
-  message += "<body>";
-
-  message += "<FORM method=\"get\" action=\"/timer.cgi\">";
-  message += "<P><INPUT type=\"radio\" name=\"TimerStatus\" value=\"1\">Timer ON";
-  message += "<P><INPUT type=\"radio\" name=\"TimerStatus\" value=\"0\">Timer OFF";
   message += "<P><INPUT type=\"submit\" value=\"Submit\"> </FORM>";
 
   message += "</body>";
@@ -121,6 +134,39 @@ void controlcgi(){
 
    server.send(200, "text/html", message);
   }
+
+  if(server.argName(0) == "SecurityStatus"){
+    int state = server.arg(0).toInt();
+
+    Security_state = state;
+    
+    String message = "";
+    message += "<html>";
+    message += "<body>";
+    message += "Currently Sensor is ";
+    message += (Security_state ? "1" : "0");
+    message += "</body>";
+    message += "</html>";
+
+   server.send(200, "text/html", message);
+  }
+}
+
+void timerpage(){
+  
+  String message = "";
+  message += "<html>";
+  message += "<body>";
+
+  message += "<FORM method=\"get\" action=\"/timer.cgi\">";
+  message += "<P><INPUT type=\"radio\" name=\"TimerStatus\" value=\"1\">Timer ON";
+  message += "<P><INPUT type=\"radio\" name=\"TimerStatus\" value=\"0\">Timer OFF";
+  message += "<P><INPUT type=\"submit\" value=\"Submit\"> </FORM>";
+
+  message += "</body>";
+  message += "</html>";
+
+  server.send(200, "text/html", message);
 }
 
 void timercgi(){
@@ -128,7 +174,7 @@ void timercgi(){
     int state = server.arg(0).toInt();
 
     Timer = state;
-    Timer_time = millis() + 5000;
+    Timer_time = millis() + Timer_t;
 
     String message = "";
     message += "<html>";
@@ -139,7 +185,97 @@ void timercgi(){
     message += "</html>";
 
    server.send(200, "text/html", message);
+   }
 }
+
+void setting(){
+
+  String message = "";
+  message += "<FORM method=\"get\" action=\"/setting.cgi\">";
+
+  message += "<P>Timer<INPUT type=\"text\" name=\"timer\">sec";
+
+  message += "<P><INPUT type=\"submit\" value=\"Submit\"> </FORM>";
+
+  message += "</body>";
+  message += "</html>";
+
+  server.send(200, "text/html", message);
+}
+
+void settingcgi(){
+  if(server.argName(0) == "timer"){
+    int state = server.arg(0).toInt();
+    Timer_t = state * 1000;
+  }
+
+  mainpage();
+}
+
+void timepage(){
+  String message = "";
+  message += "<html>";
+  message += "<body>";
+  
+  message += "<FORM method=\"get\" action=\"/time.cgi\">";
+
+  message += "<P>Year<INPUT type=\"text\" name=\"Year\">";
+  message += "<P>Month<INPUT type=\"text\" name=\"Month\">";
+  message += "<P>Day<INPUT type=\"text\" name=\"Day\">";
+  message += "<P>Hour<INPUT type=\"text\" name=\"Hour\">";
+  message += "<P>Minute<INPUT type=\"text\" name=\"Minute\">";
+  message += "<P>Second<INPUT type=\"text\" name=\"Second\">";
+  
+  message += "<P><INPUT type=\"submit\" value=\"Submit\"> </FORM>";
+
+  message += "</body>";
+  message += "</html>";
+
+  server.send(200, "text/html", message);
+}
+
+void timecgi(){
+    int year = server.arg("Year").toInt();
+    int month = server.arg("Month").toInt();
+    int day = server.arg("Day").toInt();
+    int hour = server.arg("Hour").toInt();
+    int minute = server.arg("Minute").toInt();
+    int second = server.arg("Second").toInt();
+
+    setTime(hour, minute, second, day, month, year);
+
+    mainpage();
+}
+
+void timelog(){
+  
+   String message = "";
+   
+   File file = SPIFFS.open("/log.txt", "r");
+   message += file.readString();
+   file.close();
+
+  server.send(200, "text/plain", message);
+}
+
+String timenow(){
+
+  int y=year();
+  int m=month();
+  int d=day();
+  int h=hour();
+  
+  String message = "";
+
+  message += y;
+  if(m < 10){message += "0";}
+  message += m;
+  if(d < 10){message += "0";}
+  message += d;
+  if(h < 10){message += "0";}
+  message += h;
+
+  return message;
 }
 
 void setup() {
@@ -148,6 +284,7 @@ void setup() {
 
   pinMode(Light, OUTPUT);
   pinMode(Sensor, INPUT);
+  pinMode(Security, INPUT);
   digitalWrite(Light, Light_state);
   
   Serial.println();
@@ -157,36 +294,87 @@ void setup() {
   IPAddress myIP = WiFi.softAPIP();
   Serial.print("AP IP address:");
   Serial.println(myIP);
+
+  setTime(0, 0, 0, 1, 1, 2020);
+
+  SPIFFS.begin();
+  File file = SPIFFS.open("/log.txt", "w");
+  file.close();
+      
   server.on("/", mainpage);
   server.on("/control", controlpage);
   server.on("/control.cgi", controlcgi);
   server.on("/timer", timerpage);
   server.on("/timer.cgi", timercgi);
+  server.on("/time", timepage);
+  server.on("/time.cgi", timecgi);
+  server.on("/timelog", timelog);
+  server.on("/setting", setting);
+  server.on("/setting.cgi", settingcgi);
   server.begin();
   Serial.println("HTTP server started");
 }
 
 void loop(){
 
+  int y=year();
+  int m=month();
+  int d=day();
+  int h=hour();
+  int mi=minute();
+  int s=second();
+
   Current_time = millis();
-  val = digitalRead(Sensor); // 센서값 읽기
+  val1 = digitalRead(Sensor); // 센서값 읽기
+  val2 = digitalRead(Security);
   
   server.handleClient();
   
-  if(Sensor_state==1){
-    if(val == HIGH){
-      Off_time = Current_time + 5000;
+  if(Sensor_state==1){ //센서기능
+    if(val1 == HIGH){
+      
+      Off_time = Current_time + 5000; // 소등 조건 불만족
+
+      if(Light_state==0){ //소등 후 수면시간 중 뒤척임감지
+        String nowt = timenow();
+        File file = SPIFFS.open("/log.txt", "a");
+        file.println(nowt);
+        delay(5000);
+        file.close();
+      }
     }
     else{
-      if(Current_time == Off_time){
-        Light_state = 0;    
+      if(Current_time == Off_time){ //소등 조건 만족, 로그파일 초기화 후 소등
+
+        File file = SPIFFS.open("/log.txt", "w");
+        file.close();
+        
+        Light_state = 0;
         digitalWrite(Light, Light_state);
-        Sensor_state = 0;
       }
     }
   }
 
-  if(Timer==1){
+  if(Security_state==1){ //보안기능
+     if(val2 == HIGH){
+      digitalWrite(Light, HIGH);
+      delay(1000);
+      digitalWrite(Light, LOW);
+      delay(1000);
+      digitalWrite(Light, HIGH);
+      delay(1000);
+      digitalWrite(Light, LOW);
+      delay(1000);
+      digitalWrite(Light, HIGH);
+      delay(1000);
+      digitalWrite(Light, LOW);
+      delay(1000);
+      digitalWrite(Light, Light_state);
+      Security_state = 0;
+     }
+  }
+
+  if(Timer==1){ //타이머기능
     if(Light_state==1){
       if(Current_time==Timer_time){
         Light_state = 0;    
@@ -195,15 +383,4 @@ void loop(){
       }
     }
   }
-  
-/*  if(Sensor_state == 1){
-    if(val == HIGH) {
-       Light_state = 1;    
-        digitalWrite(Light, Light_state);
-    }
-    else {
-        Light_state = 0;    
-        digitalWrite(Light, Light_state);
-     }
-  }*/
 }
