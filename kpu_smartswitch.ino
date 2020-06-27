@@ -6,8 +6,8 @@
 #include <TimeLib.h>
 
 #ifndef APSSID
-#define APSSID "KPUS/W"
-#define APPSK  "1234567890"
+#define APSSID "AndroidHotspot4925" //server wi-fi name
+#define APPSK  "950429mm"// wi-fi password
 #endif
 
 const char *ssid = APSSID;
@@ -20,12 +20,14 @@ int Timer_t = 5000;
 int Light = D5;
 int Sensor = D6;
 int Security = D1;
+String ip;
 
-int val1, val2 = 0;
+int val1, val2 = 0; // digital signal of Sensor, Security
 
 ESP8266WebServer server(80);
+WiFiClient client;
 
-void mainpage(){ /*status showing*/
+void mainpage(){ //server status
 
   int y=year();
   int m=month();
@@ -39,7 +41,8 @@ void mainpage(){ /*status showing*/
   message += "<html>";  
   
   message += "<body>";
-  message += "Server IP : 192.168.4.1";
+  message += "Server IP : ";
+  message += ip;
   message += "<br /><br />";  
   message += "Time : ";
   message += y;
@@ -76,7 +79,7 @@ void mainpage(){ /*status showing*/
   server.send(200, "text/html", message);
 }
 
-void controlpage(){
+void controlpage(){ //control form - led, timer, sensor, security
   
   String message = "";
   message += "<html>";
@@ -85,7 +88,9 @@ void controlpage(){
   message += "<FORM method=\"get\" action=\"/control.cgi\">";
   message += "<P><INPUT type=\"radio\" name=\"LightStatus\" value=\"1\">Light ON";
   message += "<P><INPUT type=\"radio\" name=\"LightStatus\" value=\"0\">Light OFF";
- 
+
+  message += "<P><INPUT type=\"radio\" name=\"TimerStatus\" value=\"1\">Timer ON";
+  message += "<P><INPUT type=\"radio\" name=\"TimerStatus\" value=\"0\">Timer OFF";
   
   message += "<P><INPUT type=\"radio\" name=\"SensorStatus\" value=\"1\">Sensor ON";
   message += "<P><INPUT type=\"radio\" name=\"SensorStatus\" value=\"0\">Sensor OFF";
@@ -100,7 +105,8 @@ void controlpage(){
   server.send(200, "text/html", message);
 }
 
-void controlcgi(){
+void controlcgi(){ //control cgi - led, timer, sensor, security
+  
   if(server.argName(0) == "LightStatus"){
     int state = server.arg(0).toInt();
 
@@ -150,27 +156,8 @@ void controlcgi(){
 
    server.send(200, "text/html", message);
   }
-}
 
-void timerpage(){
-  
-  String message = "";
-  message += "<html>";
-  message += "<body>";
-
-  message += "<FORM method=\"get\" action=\"/timer.cgi\">";
-  message += "<P><INPUT type=\"radio\" name=\"TimerStatus\" value=\"1\">Timer ON";
-  message += "<P><INPUT type=\"radio\" name=\"TimerStatus\" value=\"0\">Timer OFF";
-  message += "<P><INPUT type=\"submit\" value=\"Submit\"> </FORM>";
-
-  message += "</body>";
-  message += "</html>";
-
-  server.send(200, "text/html", message);
-}
-
-void timercgi(){
-  if(server.argName(0) == "TimerStatus"){
+   if(server.argName(0) == "TimerStatus"){
     int state = server.arg(0).toInt();
 
     Timer = state;
@@ -186,6 +173,53 @@ void timercgi(){
 
    server.send(200, "text/html", message);
    }
+}
+
+/*void timepage(){ //time setting form (for test through browser)
+  String message = "";
+  message += "<html>";
+  message += "<body>";
+  
+  message += "<FORM method=\"get\" action=\"/time.cgi\">";
+
+  message += "<P>Year<INPUT type=\"text\" name=\"Year\">";
+  message += "<P>Month<INPUT type=\"text\" name=\"Month\">";
+  message += "<P>Day<INPUT type=\"text\" name=\"Day\">";
+  message += "<P>Hour<INPUT type=\"text\" name=\"Hour\">";
+  message += "<P>Minute<INPUT type=\"text\" name=\"Minute\">";
+  message += "<P>Second<INPUT type=\"text\" name=\"Second\">";
+  
+  message += "<P><INPUT type=\"submit\" value=\"Submit\"> </FORM>";
+
+  message += "</body>";
+  message += "</html>";
+
+  server.send(200, "text/html", message);
+}*/
+
+void timecgi(){//time setting cgi
+  
+    int year = server.arg("Year").toInt();
+    int month = server.arg("Month").toInt();
+    int day = server.arg("Day").toInt();
+    int hour = server.arg("Hour").toInt();
+    int minute = server.arg("Minute").toInt();
+    int second = server.arg("Second").toInt();
+
+    setTime(hour, minute, second, day, month, year);
+
+    mainpage();
+}
+
+void timelog(){ //user's sleeping timelog data showing
+  
+   String message = "";
+   
+   File file = SPIFFS.open("/log.txt", "r");
+   message += file.readString();
+   file.close();
+
+  server.send(200, "text/plain", message);
 }
 
 void setting(){
@@ -212,53 +246,8 @@ void settingcgi(){
   mainpage();
 }
 
-void timepage(){
-  String message = "";
-  message += "<html>";
-  message += "<body>";
-  
-  message += "<FORM method=\"get\" action=\"/time.cgi\">";
 
-  message += "<P>Year<INPUT type=\"text\" name=\"Year\">";
-  message += "<P>Month<INPUT type=\"text\" name=\"Month\">";
-  message += "<P>Day<INPUT type=\"text\" name=\"Day\">";
-  message += "<P>Hour<INPUT type=\"text\" name=\"Hour\">";
-  message += "<P>Minute<INPUT type=\"text\" name=\"Minute\">";
-  message += "<P>Second<INPUT type=\"text\" name=\"Second\">";
-  
-  message += "<P><INPUT type=\"submit\" value=\"Submit\"> </FORM>";
-
-  message += "</body>";
-  message += "</html>";
-
-  server.send(200, "text/html", message);
-}
-
-void timecgi(){
-    int year = server.arg("Year").toInt();
-    int month = server.arg("Month").toInt();
-    int day = server.arg("Day").toInt();
-    int hour = server.arg("Hour").toInt();
-    int minute = server.arg("Minute").toInt();
-    int second = server.arg("Second").toInt();
-
-    setTime(hour, minute, second, day, month, year);
-
-    mainpage();
-}
-
-void timelog(){
-  
-   String message = "";
-   
-   File file = SPIFFS.open("/log.txt", "r");
-   message += file.readString();
-   file.close();
-
-  server.send(200, "text/plain", message);
-}
-
-String timenow(){
+String timenow(){ //print string(time of now)
 
   int y=year();
   int m=month();
@@ -289,11 +278,21 @@ void setup() {
   
   Serial.println();
   Serial.print("Configuring access point...  ");
-  WiFi.softAP(ssid, password);
+  WiFi.mode(WIFI_STA);
+  WiFi.begin(ssid, password);
 
-  IPAddress myIP = WiFi.softAPIP();
-  Serial.print("AP IP address:");
-  Serial.println(myIP);
+  
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+
+  Serial.println("");
+  Serial.print("Connected to ");
+  Serial.println(ssid);
+  Serial.print("IP address: ");
+  Serial.println(WiFi.localIP());
+  ip = WiFi.localIP().toString();
 
   setTime(0, 0, 0, 1, 1, 2020);
 
@@ -304,9 +303,7 @@ void setup() {
   server.on("/", mainpage);
   server.on("/control", controlpage);
   server.on("/control.cgi", controlcgi);
-  server.on("/timer", timerpage);
-  server.on("/timer.cgi", timercgi);
-  server.on("/time", timepage);
+  //server.on("/time", timepage);
   server.on("/time.cgi", timecgi);
   server.on("/timelog", timelog);
   server.on("/setting", setting);
@@ -325,7 +322,7 @@ void loop(){
   int s=second();
 
   Current_time = millis();
-  val1 = digitalRead(Sensor); // 센서값 읽기
+  val1 = digitalRead(Sensor);
   val2 = digitalRead(Security);
   
   server.handleClient();
@@ -369,6 +366,15 @@ void loop(){
       delay(1000);
       digitalWrite(Light, LOW);
       delay(1000);
+
+      if (!client.connect("wirepusher.com", 80)){ //Needs to download WirePusher(APP) - id
+        Serial.println("connection failed");
+        return;
+        }
+        client.print(String("GET ") + "/send?id=E49JmpkX3&title=Alert!&message=Invader Detected&type=Default" + " HTTP/1.1\r\n" +
+               "Host: " + "wirepusher.com" + "\r\n" + 
+               "Connection: close\r\n\r\n");
+        client.stop();
       digitalWrite(Light, Light_state);
       Security_state = 0;
      }
