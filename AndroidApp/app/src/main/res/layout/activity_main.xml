@@ -31,14 +31,6 @@
         android:textSize="36sp" />
 
     <Button
-        android:id="@+id/Main_HelpButton"
-        android:layout_width="match_parent"
-        android:layout_height="97dp"
-        android:layout_weight="1"
-        android:text="도움말"
-        android:textSize="36sp" />
-
-    <Button
         android:id="@+id/Main_ExitButton"
         android:layout_width="match_parent"
         android:layout_height="97dp"

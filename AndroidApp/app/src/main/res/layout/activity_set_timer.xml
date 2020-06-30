@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="0.25"
-        android:text="작동시간(분)"
+        android:text="작동시간(초)"
         android:textSize="24sp" />
 
     <EditText

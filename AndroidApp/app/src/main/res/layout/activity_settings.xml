@@ -7,11 +7,39 @@
     android:gravity="top">
 
     <TextView
-        android:id="@+id/textView3"
+        android:id="@+id/textView_ServerIP"
+        android:layout_width="match_parent"
+        android:layout_height="122dp"
+        android:layout_weight="1"
+        android:text="서버 IP : Unknown"
+        android:textAlignment="center"
+        android:textSize="36sp" />
+
+    <TextView
+        android:id="@+id/textView_ServerTime"
+        android:layout_width="match_parent"
+        android:layout_height="211dp"
+        android:layout_weight="1"
+        android:text="서버 시간 : 비동기"
+        android:textAlignment="center"
+        android:textSize="36sp" />
+
+    <EditText
+        android:id="@+id/editText_ServerIP"
+        android:layout_width="match_parent"
+        android:layout_height="101dp"
+        android:layout_weight="1"
+        android:ems="10"
+        android:hint="서버 IP 주소 입력"
+        android:inputType="textPersonName"
+        android:textSize="24sp" />
+
+    <Button
+        android:id="@+id/Settings_IP_Address_Set_Button"
         android:layout_width="match_parent"
         android:layout_height="100dp"
-        android:layout_weight="6"
-        android:text="Wi-Fi 목록"
+        android:layout_weight="1"
+        android:text="IP 주소 설정"
         android:textSize="36sp" />
 
     <Button
@@ -19,7 +47,7 @@
         android:layout_width="match_parent"
         android:layout_height="100dp"
         android:layout_weight="1"
-        android:text="설정"
+        android:text="시간 동기화"
         android:textSize="36sp" />
 
     <Button

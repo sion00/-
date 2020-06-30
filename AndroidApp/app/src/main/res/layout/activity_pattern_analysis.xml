@@ -8,7 +8,7 @@
     <com.github.mikephil.charting.charts.LineChart
         android:id="@+id/line_chart"
         android:layout_width="match_parent"
-        android:layout_height="595dp"
+        android:layout_height="565dp"
         android:layout_margin="16dp"
         android:layout_weight="6"
         android:gravity="center_vertical"
@@ -17,8 +17,9 @@
     <Button
         android:id="@+id/PatternAnalysis_BackButton"
         android:layout_width="match_parent"
-        android:layout_height="100dp"
-        android:layout_weight="1"
+        android:layout_height="157dp"
+        android:layout_gravity="bottom"
+        android:layout_weight="6"
         android:text="이전 화면"
         android:textSize="36sp" />
 </LinearLayout>

@@ -38,14 +38,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        Button b5 = (Button)findViewById(R.id.Main_HelpButton);
-        b5.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this,Help.class);
-                startActivity(intent);
-            }
-        });
-
         Button b6 = (Button)findViewById(R.id.Main_ExitButton);
         b6.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
