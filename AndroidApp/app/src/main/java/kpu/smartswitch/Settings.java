@@ -58,7 +58,7 @@ public class Settings extends AppCompatActivity {
                     e.printStackTrace();
                 }
 
-                URLConnector url = new URLConnector("http://" + ip_address + "/");
+                URLConnector.URLConnectorGet url = new URLConnector.URLConnectorGet("http://" + ip_address + "/");
                 url.start();
 
                 try{
